@@ -1,0 +1,81 @@
+﻿@model PagedList.IPagedList<DAO.EF.User>
+@using PagedList
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Insert";
+    Layout = "~/Areas/AdminUsers/Views/Shared/_Layout.cshtml";
+}
+@section header{
+    Danh sách người dùng
+}
+<div class="card-body">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="fas fa-table"></i>
+            Danh sách User
+        </div>
+        @using (Html.BeginForm("Index", "User", FormMethod.Get))
+        {
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-md-4">
+                        <input type="text" name="txtSearch" value="@ViewBag.txtSearch" />
+                        <button type="submit">Search</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @using (Html.BeginForm("Create", "User", FormMethod.Post))
+        {
+            @Html.ValidationMessage("")
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>Họ và tên</th>
+                            <th>Email</th>
+                            <th>Remember_token</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr id="row_@item.ID">
+                                <td>
+                                    <a href="~/AdminUsers/User/Edit/@item.ID">Edit</a>
+                                    -
+                                    @Ajax.ActionLink("Xóa", "Delete", new { @id = item.ID },
+                             new AjaxOptions
+                             {
+                                 Confirm = "Bạn có muốn xóa user này?",
+                                 OnComplete = "$('#row_" + @item.ID + "').remove()",
+                                 HttpMethod = "Delete"
+                             })
+                                    @*<a href="~/AdminUsers/User/@item.ID">Xóa</a>*@
+                                </td>
+                                <td>@item.ID</td>
+                                <td>@item.Fullname</td>
+                                <td>@item.Email</td>
+                                <td>@item.Remember_token</td>
+
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page ,@txtSearch = @ViewBag.txtSearch}))
+            </div>
+        }
+    </div>
+</div>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
